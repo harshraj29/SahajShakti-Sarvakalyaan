@@ -4,6 +4,51 @@ import { useState } from 'react';
 
 type Status = 'idle' | 'sending' | 'sent' | 'error';
 
+/**
+ * Web3Forms answers server-to-server requests with a Cloudflare challenge, so the
+ * browser posts to it directly. That access key is public by design — it is the
+ * same key their own embeddable snippet exposes.
+ */
+const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ?? '';
+const ENDPOINT = 'https://api.web3forms.com/submit';
+
+type Fields = {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  botcheck: string;
+};
+
+async function postToWeb3Forms(fields: Fields) {
+  const response = await fetch(ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      access_key: ACCESS_KEY,
+      subject: `Website enquiry: ${fields.subject}`,
+      from_name: `${fields.name} (website)`,
+      replyto: fields.email,
+      name: fields.name,
+      email: fields.email,
+      enquiry_type: fields.subject,
+      message: fields.message,
+      botcheck: fields.botcheck ? true : false
+    })
+  });
+
+  const raw = await response.text();
+  let payload: { success?: boolean; message?: string } = {};
+  try {
+    payload = JSON.parse(raw) as { success?: boolean; message?: string };
+  } catch {
+    throw new Error('The mail service blocked the request. Please email sahajshakti7@gmail.com directly.');
+  }
+  if (!response.ok || payload.success === false) {
+    throw new Error(payload.message ?? 'The mail service rejected the message.');
+  }
+}
+
 export default function ContactForm() {
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState('');
@@ -11,23 +56,33 @@ export default function ContactForm() {
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
-    const data = Object.fromEntries(new FormData(form).entries());
+    const raw = Object.fromEntries(new FormData(form).entries());
+    const fields: Fields = {
+      name: String(raw.name ?? '').trim(),
+      email: String(raw.email ?? '').trim(),
+      subject: String(raw.subject ?? 'General enquiry'),
+      message: String(raw.message ?? '').trim(),
+      botcheck: String(raw.botcheck ?? '')
+    };
 
     setStatus('sending');
     setError('');
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      const payload = (await response.json()) as { ok?: boolean; error?: string };
-      if (!response.ok || !payload.ok) throw new Error(payload.error ?? 'Could not send your message.');
+      if (!ACCESS_KEY) {
+        throw new Error(
+          'The contact form is not connected yet. Add NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY to .env.local and restart.'
+        );
+      }
+      await postToWeb3Forms(fields);
       form.reset();
       setStatus('sent');
     } catch (sendError) {
-      setError(sendError instanceof Error ? sendError.message : 'Could not send your message.');
+      setError(
+        sendError instanceof Error
+          ? sendError.message
+          : 'Could not send your message. Please email sahajshakti7@gmail.com.'
+      );
       setStatus('error');
     }
   };
