@@ -30,7 +30,8 @@ Open http://localhost:3000.
 - Connect the contact and newsletter forms to a real backend/email service. Current contact action is a mailto placeholder.
 - Add verified impact figures and approved beneficiary stories; none have been fabricated here.
 - Wire up Razorpay so the donation packages collect payment online; until then the donate page routes enquiries to email/phone.
-- Protect `/admin` before deploying it publicly.
+- Set `ADMIN_PASSWORD` before deploying; `/admin/media` stays locked until it is set.
+- Add `WEB3FORMS_ACCESS_KEY` so the contact form delivers to sahajshakti7@gmail.com.
 
 ## Stack
 Next.js 15, React 19, TypeScript, Lucide React, custom responsive CSS.

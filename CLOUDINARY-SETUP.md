@@ -73,9 +73,22 @@ safe to re-run — it skips assets that already exist.
 To keep the photos even if Cloudinary goes away, download the originals from the
 Cloudinary Media Library and add them to `public/images/`.
 
-## 6. Important security note
+## 6. Admin access
 
-The `/admin/media` page is an upload interface, not an authenticated admin system. Do not deploy it publicly without protecting `/admin` using a hosting access-control feature (for example, Cloudflare Access) or adding a proper authenticated serverless signing endpoint later. Unsigned presets are public by design; restrict the preset to image formats, size, and a dedicated folder.
+`/admin/media` is protected by a single password read from `ADMIN_PASSWORD` in
+`.env.local`. Signing in sets an httpOnly cookie holding an HMAC of the password,
+so the password itself never reaches the browser.
+
+- Leave `ADMIN_PASSWORD` unset and the page stays locked, showing a setup note.
+- Changing `ADMIN_PASSWORD` (and restarting) signs everyone out.
+- Upload, caption and delete requests to `/api/gallery` all require the cookie;
+  the public `GET` stays open so the gallery page can read photos.
+
+This is a shared password, not per-user accounts. For anything more (multiple
+editors, audit trails), put a real identity provider in front of `/admin`.
+
+The unsigned upload preset is public by design, so still restrict it to image
+formats, a size limit, and the dedicated folder.
 
 ## Current architecture
 

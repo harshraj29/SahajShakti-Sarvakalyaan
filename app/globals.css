@@ -100,3 +100,44 @@ body:has(.admin-media-page)>.topline,body:has(.admin-media-page)>.header,body:ha
 
 
 
+/* ---- Gallery: bigger tiles on small screens + click-to-zoom ---- */
+.gallery-item{border:0;padding:0;margin:0;background:none;cursor:zoom-in;font:inherit;color:inherit;text-align:left;display:block;width:100%}
+@media(max-width:900px){.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:270px;gap:14px}.gallery-1{grid-column:auto}}
+@media(max-width:700px){.gallery-grid{grid-template-columns:1fr;grid-auto-rows:290px;gap:12px}.gallery-1{grid-column:auto}.gallery-item span{font-size:12px;padding:34px 16px 14px}.moment{height:200px}}
+
+.lightbox{position:fixed;inset:0;z-index:200;background:rgba(9,22,16,.94);display:flex;align-items:center;justify-content:center;padding:24px}
+.lightbox-figure{margin:0;max-width:min(1100px,100%);max-height:100%;display:flex;flex-direction:column;align-items:center;gap:14px}
+.lightbox-figure img{max-width:100%;max-height:78vh;object-fit:contain;border-radius:4px;box-shadow:0 30px 70px #000a;display:block}
+.lightbox-caption{color:#e8efe8;font-size:13px;text-align:center;margin:0;max-width:720px}
+.lightbox-close,.lightbox-nav{position:absolute;background:#ffffff1f;border:1px solid #ffffff3d;color:#fff;border-radius:50%;width:44px;height:44px;display:grid;place-items:center;cursor:pointer;font-size:22px;line-height:1;padding:0;transition:background .2s}
+.lightbox-close{top:20px;right:20px}
+.lightbox-nav.prev{left:16px;top:50%;transform:translateY(-50%)}
+.lightbox-nav.next{right:16px;top:50%;transform:translateY(-50%)}
+.lightbox-close:hover,.lightbox-nav:hover{background:#ffffff38}
+.lightbox-close:focus-visible,.lightbox-nav:focus-visible{outline:2px solid #e2c58f;outline-offset:2px}
+@media(max-width:700px){.lightbox{padding:12px}.lightbox-close{top:8px;right:8px;width:38px;height:38px}.lightbox-nav{width:38px;height:38px}.lightbox-nav.prev{left:4px}.lightbox-nav.next{right:4px}.lightbox-figure img{max-height:72vh}}
+
+/* ---- Media manager: one big column on phones ---- */
+@media(max-width:640px){.admin-asset-grid{grid-template-columns:1fr}.admin-asset img{height:210px}.admin-caption-form{flex-wrap:wrap}}
+
+/* ---- Admin sign-in + sign-out ---- */
+.admin-top-actions{display:flex;align-items:center;gap:14px}
+.admin-signout{background:none;border:1px solid #dfe5db;border-radius:6px;color:#5c6b60;font-size:12px;font-weight:700;padding:8px 12px;cursor:pointer;transition:.2s}
+.admin-signout:hover{background:#f2f4ed;color:#244d3c}
+.admin-login{display:flex;align-items:center;justify-content:center;padding:70px 20px;min-height:55vh}
+.admin-login-card{background:#fffefa;border:1px solid #e5e8df;border-radius:12px;padding:38px 32px;max-width:420px;width:100%;text-align:center;box-shadow:0 14px 40px #233b2c0a}
+.admin-login-card h1{font-family:'Playfair Display',serif;font-size:28px;color:#18382d;margin:14px 0 6px}
+.admin-login-card p{color:#69756d;font-size:14px;margin:0 0 18px}
+.admin-login-card label{display:block;text-align:left;font-size:12px;font-weight:700;margin-bottom:6px;color:#26352e}
+.admin-login-card input{width:100%;border:1px solid #dfe5db;background:#fffefa;padding:12px;font-size:14px;border-radius:6px;margin-bottom:14px;outline-color:#8aa28c}
+.admin-login-card .button{width:100%;justify-content:center;cursor:pointer}
+.admin-login-card .button:disabled{opacity:.6;cursor:not-allowed}
+
+/* ---- Contact form states ---- */
+.hidden-honeypot{position:absolute;left:-9999px;opacity:0;height:0;width:0;pointer-events:none}
+.contact-error{margin:12px 0 0;color:#9b2c20;font-size:12px}
+.contact-sent h3{margin-bottom:10px}
+.contact-sent p{font-size:12px;color:#69756d;margin-bottom:20px}
+.contact-form button[type="submit"]:disabled{opacity:.65;cursor:wait}
+
+

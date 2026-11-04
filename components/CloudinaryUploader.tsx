@@ -193,13 +193,18 @@ export default function CloudinaryUploader() {
     }
   };
 
+  const signOut = async () => {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    window.location.reload();
+  };
+
   return (
     <>
       <Script src="https://upload-widget.cloudinary.com/global/all.js" strategy="afterInteractive" onLoad={onScriptLoad} />
       <div className="admin-media-page">
         <div className="admin-media-top">
           <div className="admin-media-brand"><span className="admin-media-mark"><img src="/images/logo-mark.png" alt="Sahajshakti Sarvakalyaan Trust logo" width={24} height={29}/></span><div><strong>Sahajshakti</strong><small>MEDIA MANAGER</small></div></div>
-          <a className="admin-back-link" href="/" >View website <ExternalLink size={15}/></a>
+          <div className="admin-top-actions"><a className="admin-back-link" href="/">View website <ExternalLink size={15}/></a><button className="admin-signout" type="button" onClick={signOut}>Sign out</button></div>
         </div>
 
         <main className="admin-media-main">

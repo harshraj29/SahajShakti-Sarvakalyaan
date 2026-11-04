@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
 import { isCloudinaryConfigured, setImageAlt, destroyImage } from '@/lib/cloudinary';
+import { isAdmin } from '@/lib/auth';
 import { getGalleryUploads } from '@/lib/gallery';
 import { addStoredUpload, removeStoredUpload, updateStoredAlt } from '@/lib/gallery-store';
 
 // Always read live so a fresh upload appears without a redeploy.
 export const dynamic = 'force-dynamic';
+
+function unauthorised() {
+  return NextResponse.json({ error: 'Sign in to the media manager first.' }, { status: 401 });
+}
 
 export async function GET() {
   try {
@@ -25,6 +30,8 @@ export async function GET() {
 
 /** Called by the upload widget so the photo is remembered even without Admin API keys. */
 export async function POST(request: Request) {
+  if (!(await isAdmin())) return unauthorised();
+
   let payload: { publicId?: string; src?: string; alt?: string };
   try {
     payload = (await request.json()) as { publicId?: string; src?: string; alt?: string };
@@ -55,6 +62,8 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  if (!(await isAdmin())) return unauthorised();
+
   let payload: { publicId?: string; alt?: string; src?: string };
   try {
     payload = (await request.json()) as { publicId?: string; alt?: string; src?: string };
@@ -95,6 +104,8 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  if (!(await isAdmin())) return unauthorised();
+
   const publicId = new URL(request.url).searchParams.get('publicId')?.trim();
   if (!publicId) {
     return NextResponse.json({ error: 'A publicId query parameter is required.' }, { status: 400 });
